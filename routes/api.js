@@ -2,48 +2,20 @@
 const turbo = require('turbo360')({site_id: process.env.TURBO_APP_ID})
 const vertex = require('vertex360')({site_id: process.env.TURBO_APP_ID})
 const router = vertex.router()
+const controllers = require('../controllers')
 
 /*  This is a sample API route. */
 
-/*router.get('/:resource', (req, res) => {
-	res.json({
-		confirmation: 'success',
-		resource: req.params.resource,
-		query: req.query // from the url query string
-	})
-})
+const Player = require('../models/Player')
+const Guild = require('../models/Guild')
 
-router.get('/:resource/:id', (req, res) => {
-	res.json({
-		confirmation: 'success',
-		resource: req.params.resource,
-		id: req.params.id,
-		query: req.query // from the url query string
-	})
-})*/
-
-const players = [
-	{firstName:"Bromelia", class: "Dragonknight", selectedBuild: "2-Handed"},
-	{firstName:"Darknessheart", class: "Ranger", selectedBuild: "2-Handed"},
-	{firstName:"Harra", class: "Spellweaver", selectedBuild: "1-Handed"}
-]
-
-const guilds = [
-	{name: "RainningBlood", members: 10, createdat: "09/26/2018"},
-	{name: "FairyTail", members: 50, createdat: "09/26/2018"}
-]
-
-const db = {
-	guild: guilds,
-	player: players
-}
-
+//
 router.get('/:resource', (req, res) => {
 	const resource = req.params.resource;
+	const controller = controllers[resource]
 
-	const data = db[resource];
-
-	if (data == null){
+	if(controller == null){
+		// If controller doesn't exist, return a error
 		res.json({
 			confirmation: 'fail',
 			message: 'Invalid request!'
@@ -52,50 +24,66 @@ router.get('/:resource', (req, res) => {
 		return
 	}
 
-	res.json({
-		confirmation: 'sucess',
-		data: data
+	controller.get()
+	// Sucess callback
+	.then(data => {
+		res.json({
+			confirmation: 'sucess',
+			data: data
+		})
+
 	})
+	// Fail callback
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
 
-	// if(resource == 'player'){
-	// 	res.json({
-	// 		confirmation: 'sucess',
-	// 		data: players
-	// 	})
-
-	// 	return
-	// }
-
-	// if(resource == 'guild'){
-	// 	res.json({
-	// 		confirmation: 'sucess',
-	// 		data: guilds
-	// 	})
-
-	// 	return
-	// }
-
-	// res.json({
-	// 	confirmation: 'fail',
-	// 	message: 'Invalid request!'
-	// })
+	})
 
 })
 
-/* 	router.get('/test', (req, res) => {
+// Set-up a individual get for each resource
 
+// Get Players data from Mongo DB
+router.get('/player', (req, res) => {
+	
+	// Find all Players data and return a json response with that
+	Player.find(null)
+	.then(data => {
 		res.json({
 			confirmation: 'sucess',
-			data: 'this is a test endpoint'
+			data: data
 		})
 	})
+	// return a json response with a error mensage if got a error
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
+	})
+})
 
-	router.get('/guild', (req, res) => {
-
+// Get Guild data from Mongo DB
+router.get('/guild', (req, res) => {
+	
+	// Find all Players data and return a json response with that
+	Guild.find(null)
+	.then(data => {
 		res.json({
 			confirmation: 'sucess',
-			data: guilds
+			data: data
 		})
-	}) */
+	})
+	// return a json response with a error mensage if got a error
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
+	})
+})
 
 module.exports = router

@@ -4,15 +4,15 @@ const vertex = require('vertex360')({site_id: process.env.TURBO_APP_ID})
 const router = vertex.router()
 const controllers = require('../controllers')
 
-/*  This is a sample API route. */
+// GET, POST, PUT, DELETE
 
-const Player = require('../models/Player')
-const Guild = require('../models/Guild')
+// Define a end-point to handle the resource request specified in the api
 
-//
+// Get all resources specified
 router.get('/:resource', (req, res) => {
 	const resource = req.params.resource;
 	const controller = controllers[resource]
+	const filters = req.query
 
 	if(controller == null){
 		// If controller doesn't exist, return a error
@@ -24,7 +24,7 @@ router.get('/:resource', (req, res) => {
 		return
 	}
 
-	controller.get()
+	controller.get(filters)
 	// Sucess callback
 	.then(data => {
 		res.json({
@@ -44,46 +44,42 @@ router.get('/:resource', (req, res) => {
 
 })
 
-// Set-up a individual get for each resource
+// Get the resources with the id specified
+router.get('/:resource/:id', (req, res) => {
+	const resource = req.params.resource
+	const id = req.params.id
 
-// Get Players data from Mongo DB
-router.get('/player', (req, res) => {
-	
-	// Find all Players data and return a json response with that
-	Player.find(null)
+	const controller = controllers[resource]
+
+	if(controller == null){
+		// If controller doesn't exist, return a error
+		res.json({
+			confirmation: 'fail',
+			message: 'Invalid request!'
+		})
+
+		return
+	}
+
+	controller.getById(id)
+	// Sucess callback
 	.then(data => {
 		res.json({
 			confirmation: 'sucess',
 			data: data
 		})
-	})
-	// return a json response with a error mensage if got a error
-	.catch(err => {
-		res.json({
-			confirmation: 'fail',
-			message: err.message
-		})
-	})
-})
 
-// Get Guild data from Mongo DB
-router.get('/guild', (req, res) => {
-	
-	// Find all Players data and return a json response with that
-	Guild.find(null)
-	.then(data => {
-		res.json({
-			confirmation: 'sucess',
-			data: data
-		})
 	})
-	// return a json response with a error mensage if got a error
+	// Fail callback
 	.catch(err => {
 		res.json({
 			confirmation: 'fail',
 			message: err.message
 		})
+
 	})
+
+
 })
 
 module.exports = router

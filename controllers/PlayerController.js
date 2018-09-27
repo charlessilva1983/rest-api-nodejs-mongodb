@@ -14,8 +14,21 @@ module.exports = {
             .catch(err => {
                 reject(err)
             })
-
         })
-        
+    },
+
+    getById: (id) => {
+        // Return a primisse
+        return new Promise((resolve, reject) => {
+            Player.findById(id)
+            // Sucess block
+            .then(data => {
+                resolve(data)
+            })
+            // Error block
+            .catch(err => {
+                reject(new Error('Player ' + id + ' not found.'))
+            })
+        })
     }
 }

@@ -62,5 +62,21 @@ module.exports = {
                 reject(new Error('Player ' + id + ' not found.'))
             })
         })
+    },
+
+    // DELETE
+    delete: (id) => {
+        // Return a primisse
+        return new Promise((resolve, reject) => {
+            Player.findByIdAndRemove(id)
+            // Sucess block
+            .then(data => {
+                resolve({id: id})
+            })
+            // Error block
+            .catch(err => {
+                reject(new Error('Player ' + id + ' not found.'))
+            })
+        })
     }
 }

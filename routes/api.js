@@ -142,4 +142,37 @@ router.put('/:resource/:id', (req, res) => {
 	})
 })
 
+// DELETE
+router.delete('/:resource/:id', (req, res) => {
+	const resource = req.params.resource
+	const id = req.params.id
+	
+	const controller = controllers[resource]
+
+	if(controller == null){
+		// If controller doesn't exist, return a error
+		res.json({
+			confirmation: 'fail',
+			message: 'Invalid resource!'
+		})
+
+		return
+	}
+
+	controller.delete(id)
+	.then(data => {
+		res.json({
+			confirmation: 'sucess',
+			data: data
+		})
+	})
+	// Fail callback
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
+	})
+})
+
 module.exports = router

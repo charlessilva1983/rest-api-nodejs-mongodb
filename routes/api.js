@@ -18,7 +18,7 @@ router.get('/:resource', (req, res) => {
 		// If controller doesn't exist, return a error
 		res.json({
 			confirmation: 'fail',
-			message: 'Invalid request!'
+			message: 'Invalid resource!'
 		})
 
 		return
@@ -55,7 +55,7 @@ router.get('/:resource/:id', (req, res) => {
 		// If controller doesn't exist, return a error
 		res.json({
 			confirmation: 'fail',
-			message: 'Invalid request!'
+			message: 'Invalid resource!'
 		})
 
 		return
@@ -79,6 +79,40 @@ router.get('/:resource/:id', (req, res) => {
 
 	})
 
+})
+
+// POST - create new entities:
+router.post('/:resource', (req, res) => {
+	const resource = req.params.resource
+	
+	const controller = controllers[resource]
+
+	if(controller == null){
+		// If controller doesn't exist, return a error
+		res.json({
+			confirmation: 'fail',
+			message: 'Invalid resource!'
+		})
+
+		return
+	}
+
+	controller.post(req.body)
+	.then(data => {
+		res.json({
+			confirmation: 'sucess',
+			data: data
+		})
+
+	})
+	// Fail callback
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
+
+	})
 
 })
 

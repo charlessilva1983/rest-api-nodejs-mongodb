@@ -8,6 +8,7 @@ const controllers = require('../controllers')
 
 // Define a end-point to handle the resource request specified in the api
 
+// GET
 // Get all resources specified
 router.get('/:resource', (req, res) => {
 	const resource = req.params.resource;
@@ -18,7 +19,7 @@ router.get('/:resource', (req, res) => {
 		// If controller doesn't exist, return a error
 		res.json({
 			confirmation: 'fail',
-			message: 'Invalid request!'
+			message: 'Invalid resource!'
 		})
 
 		return
@@ -31,7 +32,6 @@ router.get('/:resource', (req, res) => {
 			confirmation: 'sucess',
 			data: data
 		})
-
 	})
 	// Fail callback
 	.catch(err => {
@@ -39,9 +39,7 @@ router.get('/:resource', (req, res) => {
 			confirmation: 'fail',
 			message: err.message
 		})
-
 	})
-
 })
 
 // Get the resources with the id specified
@@ -55,7 +53,7 @@ router.get('/:resource/:id', (req, res) => {
 		// If controller doesn't exist, return a error
 		res.json({
 			confirmation: 'fail',
-			message: 'Invalid request!'
+			message: 'Invalid resource!'
 		})
 
 		return
@@ -68,7 +66,6 @@ router.get('/:resource/:id', (req, res) => {
 			confirmation: 'sucess',
 			data: data
 		})
-
 	})
 	// Fail callback
 	.catch(err => {
@@ -76,10 +73,73 @@ router.get('/:resource/:id', (req, res) => {
 			confirmation: 'fail',
 			message: err.message
 		})
+	})
+})
 
+// POST - create new entities:
+router.post('/:resource', (req, res) => {
+	const resource = req.params.resource
+	
+	const controller = controllers[resource]
+
+	if(controller == null){
+		// If controller doesn't exist, return a error
+		res.json({
+			confirmation: 'fail',
+			message: 'Invalid resource!'
+		})
+
+		return
+	}
+
+	controller.post(req.body)
+	.then(data => {
+		res.json({
+			confirmation: 'sucess',
+			data: data
+		})
+	})
+	// Fail callback
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
 	})
 
+})
 
+// PUT - Update an entity by id
+router.put('/:resource/:id', (req, res) => {
+	const resource = req.params.resource
+	const id = req.params.id
+	
+	const controller = controllers[resource]
+
+	if(controller == null){
+		// If controller doesn't exist, return a error
+		res.json({
+			confirmation: 'fail',
+			message: 'Invalid resource!'
+		})
+
+		return
+	}
+
+	controller.put(id, req.body)
+	.then(data => {
+		res.json({
+			confirmation: 'sucess',
+			data: data
+		})
+	})
+	// Fail callback
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		})
+	})
 })
 
 module.exports = router
